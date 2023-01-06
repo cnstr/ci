@@ -87,9 +87,9 @@ jobs:
         run: |
           cargo install cargo-release
           cargo install --path deploy
-          cargo run --bin deploy --release
           cargo release version --no-confirm -x -p api -p deploy $BUMP_TYPE
           echo "git_version=$(cargo read-manifest --manifest-path api/Cargo.toml | jq -r '.version')" >> $GITHUB_ENV
+          cargo run --bin deploy --release
         env:
           BUMP_TYPE: ${{ inputs.bump_type }}
 
