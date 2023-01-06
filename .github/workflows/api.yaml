@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: cnstr/api
+          ref: main
           fetch-depth: 0
 
       - name: Configure Rust and Cargo
@@ -70,6 +71,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: cnstr/api
+          ref: main
           fetch-depth: 0
 
       - name: Configure Kubernetes
