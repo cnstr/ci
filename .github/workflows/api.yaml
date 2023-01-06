@@ -73,6 +73,7 @@ jobs:
           repository: cnstr/api
           ref: main
           fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Configure Kubernetes
         uses: tale/kubectl-action@v1
