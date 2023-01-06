@@ -20,21 +20,14 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./api
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-
-      - name: Configure SSH Agent
-        uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-
-      - name: Clone the cnstr/api repository
-        run: git clone git@github.com:cnstr/api.git api
-        working-directory: .
+          repository: cnstr/api
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Configure Rust and Cargo
         uses: actions-rs/toolchain@v1
