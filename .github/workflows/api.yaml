@@ -30,9 +30,7 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
 
       - name: Configure Rust and Cargo
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Update Crate versions and set build-time variables
         run: |
@@ -83,9 +81,7 @@ jobs:
           kubectl-version: v1.26.0
 
       - name: Configure Rust and Cargo
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Install Rust dependencies and run deploy tool
         run: |
