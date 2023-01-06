@@ -92,13 +92,17 @@ jobs:
           cargo install cargo-release
           cargo install --path deploy
           cargo run --bin deploy --release
+          cargo release version --no-confirm -x -p api -p deploy $BUMP_TYPE
           echo "git_version=$(cargo read-manifest --manifest-path api/Cargo.toml | jq -r '.version')" >> $GITHUB_ENV
+        env:
+          BUMP_TYPE: ${{ inputs.bump_type }}
 
       - name: Commit file changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'chore: update versions and manifests to ${{ env.git_version }}'
           commit_options: '--no-verify --signoff'
+          file_pattern: 'Cargo.lock api/Cargo.toml deploy/Cargo.toml kubernetes/api.yaml'
 
       - name: Create Git tags and deploy Kubernetes manifests
         run: |
