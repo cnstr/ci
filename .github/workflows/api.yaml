@@ -97,6 +97,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'chore: update versions and manifests to ${{ env.git_version }}'
+          commit_author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
           commit_options: '--no-verify --signoff'
           file_pattern: 'Cargo.lock api/Cargo.toml deploy/Cargo.toml kubernetes/api.yaml'
 
