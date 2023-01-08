@@ -86,7 +86,7 @@ jobs:
       - name: Install Rust dependencies and run deploy tool
         run: |
           cargo install cargo-release
-          cargo install --path deploy
+          cargo install --path crates/deploy
           cargo release version --no-confirm -x $BUMP_TYPE
           echo "git_version=$(cargo metadata --manifest-path crates/averter/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
           cargo run --bin deploy --release
