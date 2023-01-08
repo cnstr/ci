@@ -99,7 +99,7 @@ jobs:
           commit_message: 'chore: update versions and manifests to ${{ env.git_version }}'
           commit_author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
           commit_options: '--no-verify --signoff'
-          file_pattern: 'Cargo.lock Cargo.toml deploy/Cargo.toml kubernetes/averter.yaml'
+          file_pattern: 'Cargo.lock crates/averter/Cargo.toml crates/deploy/Cargo.toml kubernetes/averter.yaml'
 
       - name: Create Git tags and deploy Kubernetes manifests
         run: |
