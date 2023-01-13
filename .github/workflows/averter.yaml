@@ -89,7 +89,7 @@ jobs:
           cargo install --path crates/deploy
           cargo release version --no-confirm -x $BUMP_TYPE
           echo "git_version=$(cargo metadata --manifest-path crates/averter/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
-          cargo run --bin deploy --release
+          cargo deploy
         env:
           BUMP_TYPE: ${{ inputs.bump_type }}
 
