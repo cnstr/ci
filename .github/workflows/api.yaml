@@ -36,7 +36,7 @@ jobs:
         run: |
           cargo install cargo-release
           cargo release version --no-confirm -x -p api -p deploy $BUMP_TYPE
-          echo "git_version=$(cargo metadata --manifest-path api/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
+          echo "git_version=$(cargo metadata --manifest-path crates/api/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
           echo "git_state=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo "build_date=$(date --rfc-3339=date)" >> $GITHUB_ENV
         env:
@@ -86,10 +86,10 @@ jobs:
       - name: Install Rust dependencies and run deploy tool
         run: |
           cargo install cargo-release
-          cargo install --path deploy
+          cargo install --path crates/deploy
           cargo release version --no-confirm -x -p api -p deploy $BUMP_TYPE
-          echo "git_version=$(cargo metadata --manifest-path api/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
-          cargo run --bin deploy --release
+          echo "git_version=$(cargo metadata --manifest-path crates/api/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
+          cargo deploy
         env:
           BUMP_TYPE: ${{ inputs.bump_type }}
 
