@@ -32,6 +32,11 @@ jobs:
       - name: Configure Rust and Cargo
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Load manifest.yaml for API
+        run: echo "$MANIFEST_BASE64" | base64 -d > manifest.yaml
+        env:
+          MANIFEST_BASE64: ${{ secrets.API_MANIFEST }}
+
       - name: Update Crate versions and set build-time variables
         run: |
           cargo install cargo-release
@@ -82,6 +87,11 @@ jobs:
 
       - name: Configure Rust and Cargo
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Load manifest.yaml for API
+        run: echo "$MANIFEST_BASE64" | base64 -d > manifest.yaml
+        env:
+          MANIFEST_BASE64: ${{ secrets.API_MANIFEST }}
 
       - name: Install Rust dependencies and run deploy tool
         run: |
