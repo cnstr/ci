@@ -29,12 +29,23 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
 
+      - name: Configure Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Configure Rust and Cargo
         uses: dtolnay/rust-toolchain@stable
 
       - name: Update Crate versions and set build-time variables
         run: |
-          cargo install cargo-release
+          cargo install --force cargo-release
           cargo release version --no-confirm -x $BUMP_TYPE
           echo "git_version=$(cargo metadata --manifest-path crates/averter/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
           echo "git_state=$(git rev-parse HEAD)" >> $GITHUB_ENV
@@ -74,6 +85,17 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
 
+      - name: Configure Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Configure Kubernetes
         uses: tale/kubectl-action@v1
         with:
@@ -85,7 +107,6 @@ jobs:
 
       - name: Install Rust dependencies and run deploy tool
         run: |
-          cargo install cargo-release
           cargo install --path crates/deploy
           cargo release version --no-confirm -x $BUMP_TYPE
           echo "git_version=$(cargo metadata --manifest-path crates/averter/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
