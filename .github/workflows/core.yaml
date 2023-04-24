@@ -77,7 +77,7 @@ jobs:
           BUMP_TYPE: ${{ inputs.bump_type }}
 
       - name: Configure Docker
-      - uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v2
         with:
           version: latest
 
