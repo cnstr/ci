@@ -32,15 +32,10 @@ jobs:
       - name: Configure Caching
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: core-${{ hashFiles('**/Cargo.lock') }}
+          path: /tmp/.buildx-cache
+          key: cnstr-core-buildx-${{ github.sha }}
           restore-keys: |
-            core-
+            cnstr-core-buildx-
 
       - name: Configure Rust and Cargo
         uses: dtolnay/rust-toolchain@stable
@@ -57,6 +52,19 @@ jobs:
           run_install: |
             - args: [--frozen-lockfile]
 
+      - name: Configure Docker
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: latest
+          platforms: linux/amd64
+
+      - name: Login to tale.me
+        uses: docker/login-action@v2
+        with:
+          registry: tale.me
+          username: bot-github
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
       - name: Update npm versions and set build-time variables
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -68,21 +76,25 @@ jobs:
         env:
           BUMP_TYPE: ${{ inputs.bump_type }}
 
-      - name: Login to tale.me
-        uses: docker/login-action@v2.1.0
+      - name: Configure Docker
+      - uses: docker/setup-buildx-action@v2
         with:
-          registry: tale.me
-          username: bot-github
-          password: ${{ secrets.REGISTRY_TOKEN }}
+          version: latest
 
-      - name: Build container image
-        run: docker build -t tale.me/canister/core:$GIT_VERSION --build-arg BUILD_DATE=$BUILD_DATE --build-arg VERSION=$GIT_VERSION --build-arg GIT_STATE=$GIT_STATE .
-        env:
-          GIT_VERSION: ${{ env.git_version }}
-          GIT_STATE: ${{ env.git_state }}
-          BUILD_DATE: ${{ env.build_date }}
+      - name: Build tale.me/canister/core
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: tale.me/canister/core:${{ env.git_version }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-to,mode=max
+          build-args: |
+            BUILD_DATE=${{ env.build_date }}
+            VERSION=${{ env.git_version }}
+            GIT_STATE=${{ env.git_state }}
 
-      - name: Push container image to tale.me
-        run: docker push tale.me/canister/core:$GIT_VERSION
-        env:
-          GIT_VERSION: ${{ env.git_version }}
+      - name: Update Caching Layers
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-to /tmp/.buildx-cache
