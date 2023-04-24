@@ -1,4 +1,4 @@
-name: API Deployment
+name: Core Deployment
 
 on:
   workflow_dispatch:
@@ -54,8 +54,8 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install:
-            args: [ --frozen-lockfile ]
+          run_install: |
+            - args: [--frozen-lockfile]
 
       - name: Update npm versions and set build-time variables
         run: |
