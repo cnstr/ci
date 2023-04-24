@@ -59,6 +59,8 @@ jobs:
 
       - name: Update npm versions and set build-time variables
         run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
           pnpm np --no-cleanup --no-tests --no-publish --no-release-draft --yolo --message 'chore: v%s' $BUMP_TYPE
           echo "git_version=$(jq -r '.version' package.json)" >> $GITHUB_ENV
           echo "git_state=$(git rev-parse HEAD)" >> $GITHUB_ENV
