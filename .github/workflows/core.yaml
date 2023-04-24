@@ -1,0 +1,86 @@
+name: API Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version Bump Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+          - prepatch
+          - preminor
+          - premajor
+          - prerelease
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          repository: cnstr/core
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Configure Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: core-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            core-
+
+      - name: Configure Rust and Cargo
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Configure PNPM and install dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install:
+            args: [ --frozen-lockfile ]
+
+      - name: Update npm versions and set build-time variables
+        run: |
+          pnpm np --no-cleanup --no-tests --no-publish --no-release-draft --yolo --message 'chore: v%s' $BUMP_TYPE
+          echo "git_version=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+          echo "git_state=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "build_date=$(date --rfc-3339=date)" >> $GITHUB_ENV
+        env:
+          BUMP_TYPE: ${{ inputs.bump_type }}
+
+      - name: Login to tale.me
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: tale.me
+          username: bot-github
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Build container image
+        run: docker build -t tale.me/canister/core:$GIT_VERSION --build-arg BUILD_DATE=$BUILD_DATE --build-arg VERSION=$GIT_VERSION --build-arg GIT_STATE=$GIT_STATE .
+        env:
+          GIT_VERSION: ${{ env.git_version }}
+          GIT_STATE: ${{ env.git_state }}
+          BUILD_DATE: ${{ env.build_date }}
+
+      - name: Push container image to tale.me
+        run: docker push tale.me/canister/core:$GIT_VERSION
+        env:
+          GIT_VERSION: ${{ env.git_version }}
