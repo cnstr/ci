@@ -117,8 +117,11 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Configure Rust and Cargo
-        uses: dtolnay/rust-toolchain@stable
+      - name: Configure Kubernetes
+        uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+          kubectl-version: v1.26.0
 
       - name: Configure Node.js
         uses: actions/setup-node@v3
