@@ -68,24 +68,12 @@ jobs:
         env:
           BUMP_TYPE: ${{ inputs.bump_type }}
 
-      - name: Build container image
-        run: docker build -t tale.me/canister/api:$GIT_VERSION --build-arg BUILD_DATE=$BUILD_DATE --build-arg VERSION=$GIT_VERSION --build-arg GIT_STATE=$GIT_STATE .
-        env:
-          GIT_VERSION: ${{ env.git_version }}
-          GIT_STATE: ${{ env.git_state }}
-          BUILD_DATE: ${{ env.build_date }}
-
-      - name: Push container image to tale.me
-        run: docker push tale.me/canister/api:$GIT_VERSION
-        env:
-          GIT_VERSION: ${{ env.git_version }}
-
       - name: Build tale.me/canister/api
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: tale.me/canister/api:$GIT_VERSION
+          tags: tale.me/canister/api:${{ env.git_version }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-to,mode=max
           build-args: |
