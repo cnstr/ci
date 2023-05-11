@@ -150,7 +150,9 @@ jobs:
             ${{ runner.os }}-pnpm--
 
       - name: Load manifest.yaml for Core
-        run: echo "$MANIFEST_BASE64" | base64 -d > manifest.yaml
+        run: |
+          echo "$MANIFEST_BASE64" | base64 -d > manifest.yaml
+          echo "git_version=$(jq -r '.version' package.json)" >> $GITHUB_ENV
         env:
           MANIFEST_BASE64: ${{ secrets.CORE_MANIFEST }}
 
