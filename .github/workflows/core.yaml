@@ -86,12 +86,12 @@ jobs:
         with:
           version: latest
 
-      - name: Build tale.me/canister/core
+      - name: Build us-east4-docker.pkg.dev/aarnavtale/canister/core
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: tale.me/canister/core:${{ env.git_version }}
+          tags: us-east4-docker.pkg.dev/aarnavtale/canister/core:${{ env.git_version }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-to,mode=max
           build-args: |
