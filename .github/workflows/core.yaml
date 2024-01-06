@@ -81,10 +81,14 @@ jobs:
         env:
           MANIFEST_BASE64: ${{ secrets.CORE_MANIFEST }}
 
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Configure Docker
         uses: docker/setup-buildx-action@v2
         with:
           version: latest
+          platforms: linux/amd64,linux/arm64
 
       - name: Build us-east4-docker.pkg.dev/aarnavtale/canister/core
         uses: docker/build-push-action@v4
