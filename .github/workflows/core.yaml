@@ -98,6 +98,7 @@ jobs:
           tags: us-east4-docker.pkg.dev/aarnavtale/canister/core:${{ env.git_version }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-to,mode=max
+          platforms: linux/amd64,linux/arm/v8
           build-args: |
             BUILD_DATE=${{ env.build_date }}
             VERSION=${{ env.git_version }}
