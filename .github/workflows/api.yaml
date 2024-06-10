@@ -39,8 +39,6 @@ jobs:
 
       - name: Configure Rust and Cargo
         uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: '1.70.0'
 
       - name: Configure Docker
         uses: docker/setup-buildx-action@v2
@@ -62,6 +60,7 @@ jobs:
 
       - name: Update crate versions and set build-time variables
         run: |
+          sudo apt install libssl-dev
           cargo install --force cargo-release
           cargo release version --no-confirm -x -p api -p deploy $BUMP_TYPE
           echo "git_version=$(cargo metadata --manifest-path crates/api/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
