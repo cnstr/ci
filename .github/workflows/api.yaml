@@ -76,7 +76,7 @@ jobs:
           tags: iad.ocir.io/idydjmpmhphx/tale/cnstr-api:${{ env.git_version }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-to,mode=max
-          platforms: linux/arm64
+          platforms: linux/amd64
           build-args: |
             BUILD_DATE=${{ env.build_date }}
             VERSION=${{ env.git_version }}
