@@ -19,7 +19,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -60,7 +60,6 @@ jobs:
 
       - name: Update crate versions and set build-time variables
         run: |
-          sudo apt install libssl-dev
           cargo install --force cargo-release
           cargo release version --no-confirm -x -p api -p deploy $BUMP_TYPE
           echo "git_version=$(cargo metadata --manifest-path crates/api/Cargo.toml --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
